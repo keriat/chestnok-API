@@ -4,6 +4,8 @@ HOST: http://polls.apiblueprint.org/
 # Chestnok Application API
 > *Documentation written in english to stay in consistenct with common standarts*
 
+
+
 # Group User
 
 In general application doesn't allow any usage without authentification.
@@ -42,6 +44,13 @@ Sequence of actions depends on client flow and is covered by exhaustive variety 
 
 ### Update profile info [POST]
 
+Despite sending whole User object there is only two editable fields:
+* email
+* inn
+
+This fields can be updated only in case user has no stored inn or email.
+**There is no possibility to changes once stored information.**
+
 + Request (application/json)
 
     + Attributes (User)
@@ -55,7 +64,7 @@ Sequence of actions depends on client flow and is covered by exhaustive variety 
 
 Application can authentificate user only by phone-number.
 It can be achieved with help of sms-codes.
-To avoid useless waste of money authorisation token 
+To avoid useless waste of money authorisation token with unlimited term of valiability
 
 + Request (application/json)
 
@@ -106,15 +115,41 @@ SMS-sending depends on
 
 ## Convert profile [/user/convert]
 
-## Set phone number [/user/phone]
++ Request (application/json)
 
-## Set phone number [/user/phone]
+    + Attributes
+        — phone: `+7 (095) 123-45-67` (string)
+            Valid russian mobile phone number
+        — auth_session: "098f6bcd4621d373cade4e832627b4f6" (string)
+            32-symbol code of curren authentification session
+
++ Response 200 (application/json)
+
+    + Attribute
+        — auth_session: "098f6bcd4621d373cade4e832627b4f6" (string)
+            32-symbol code of curren authentification session
 
 # Group Data
 
-## Grap all data [/data]
+## Data request path [/data]
 
-## Request difference [/data]
+### Grap all data [GET]
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: {token}
+            Accept-Charset: utf-8
+
++ Response 200 (application/json)
+
+    + Attribute
+        — office_list: "098f6bcd4621d373cade4e832627b4f6" (string)
+            32-symbol code of curren authentification session
+
+
+### Request data difference [POST]
 
 # Group Request
 
@@ -223,18 +258,8 @@ form of choices.
 + approved_at: `2018.12.24 23:10:10` (string)
     Date and time of approval confirmation from the Office
 
+## Office (object)
+
 ## Request (object)
 
 ## Photo (object)
-
-##  (object)
-
-## Message (object)
-
-+ text (string) - text of the message
-+ author (Author) - author of the message
-
-## Author (object)
-
-+ name: John
-+ email: john@appleseed.com
