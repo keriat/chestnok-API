@@ -4,7 +4,7 @@ HOST: http://polls.apiblueprint.org/
 # Chestnok Application API
 > *Documentation written in english to stay in consistenct with common standarts*
 
-
+API documentation for Android Application **«Чес(т)нок. Грузы»** *(draft name for the first stage)*
 
 # Group User
 
@@ -37,24 +37,18 @@ Sequence of actions depends on client flow and is covered by exhaustive variety 
 
             Authorization: {token}
             Accept-Charset: utf-8
-    
+
 + Response 200 (application/json)
 
     + Attributes (User)
 
 ### Update profile info [POST]
-
-Despite sending whole User object there is only two editable fields:
-* email
-* inn
-
-This fields can be updated only in case user has no stored inn or email.
-**There is no possibility to changes once stored information.**
+    Despite sending whole User object there is only two editable fields — **email** and **inn** and fields can be updated only in case user has no previously stored values. **There is no possibility to changes once stored information.**
 
 + Request (application/json)
 
     + Attributes (User)
-    
+
 + Response 200 (application/json)
 
     + Attributes (User)
@@ -76,11 +70,10 @@ To avoid useless waste of money authorisation token with unlimited term of valia
 
     + Attributes
         — auth_session: "098f6bcd4621d373cade4e832627b4f6" (string)
-            32-symbol code of curren authentification session
-            
+            32-symbol code of current authentification session
+
 ## SMS handling [/user/sms]
 
-SMS-sending depends on 
 
 ### Confirm authentification [POST]
 
@@ -90,10 +83,10 @@ SMS-sending depends on
         — phone: `+7 (095) 123-45-67` (string)
             Valid russian mobile phone number
         — auth_session: "098f6bcd4621d373cade4e832627b4f6" (string)
-            32-symbol code of curren authentification session
+            32-symbol code of current authentification session
         — code: 124232 (number)
             6-digits verification code from sms-message
-    
+
 + Response 200 (application/json)
     + Attributes (User)
 
@@ -105,13 +98,13 @@ SMS-sending depends on
         — phone: `+7 (095) 123-45-67` (string)
             Valid russian mobile phone number
         — auth_session: "098f6bcd4621d373cade4e832627b4f6" (string)
-            32-symbol code of curren authentification session
+            32-symbol code of current authentification session
 
 + Response 200 (application/json)
 
     + Attribute
         — auth_session: "098f6bcd4621d373cade4e832627b4f6" (string)
-            32-symbol code of curren authentification session
+            32-symbol code of current authentification session
 
 ## Convert profile [/user/convert]
 
@@ -145,18 +138,15 @@ SMS-sending depends on
 + Response 200 (application/json)
 
     + Attribute
-        — office_list: "098f6bcd4621d373cade4e832627b4f6" (string)
-            32-symbol code of curren authentification session
+        — office_list (array[Office])
+        — request_list (array[Office])
+        — version: 1545984306 (number)
+            Version is a timestamp of last office and request provision
 
 
 ### Request data difference [POST]
 
 # Group Request
-
-Application 
-
-
-
 
 
 ## Questions Collection [/questions]
@@ -238,27 +228,39 @@ form of choices.
 ## User (object)
 
 ### Properties
-+ id: 123 (number)
++ id: 123 (number, required)
 + phone: `+7 (095) 123-45-78` (string, required)
     Russian mobile phone number
-+ email: test@cesnok.ru (string) 
++ email: test@cesnok.ru (string)
     Valid email address
 + inn: 1234567890 (number)
     10 *(for the individual entrepreneur)* or 12 *(for LLC)*
 + is_confirmed: false (boolean, required)
     User confirmed his phone number
 + is_approved: false (boolean, required)
-    Office approves user to be transporter 
+    Office approves user to be transporter
 + is_professional: false (boolean, required)
     User has at least one finished request
 + created_at: `2018.12.24 23:10:10` (string, required)
     Registration Date and Time
 + updated_at: `2018.12.24 23:10:10` (string, required)
-    Last profile update Date and Time. Default value is equal to created_at property 
+    Last profile update Date and Time. Default value is equal to created_at property
 + approved_at: `2018.12.24 23:10:10` (string)
     Date and time of approval confirmation from the Office
 
 ## Office (object)
+
+### Properties
++ id: 123 (number, required)
++ phone: `+7 (095) 123-45-78` (string, required)
++ location_id: 123 (number, required)
++ geodata
+    + lat (number, required)
+    + lon (number, required)
+    + radius (number, required)
++ is_default: false (boolean)
+    Default Office located in Moscow and covers all requests out of local offices radius
++ created_at
 
 ## Request (object)
 
