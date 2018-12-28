@@ -27,6 +27,11 @@ Sequence of actions depends on client flow and is covered by exhaustive variety 
 
 ## Profile [/user]
 
+Despite sending whole User object while updating the profile there is only two editable fields — **email** and **inn**.
+This fields can be updated only in case user has no previously stored values. 
+
+**There is no possibility to changes once stored information.**
+
 + Attributes (User)
 
 ### Get profile info [GET]
@@ -43,7 +48,6 @@ Sequence of actions depends on client flow and is covered by exhaustive variety 
     + Attributes (User)
 
 ### Update profile info [POST]
-    Despite sending whole User object there is only two editable fields — **email** and **inn** and fields can be updated only in case user has no previously stored values. **There is no possibility to changes once stored information.**
 
 + Request (application/json)
 
@@ -75,7 +79,7 @@ To avoid useless waste of money authorisation token with unlimited term of valia
 ## SMS handling [/user/sms]
 
 
-### Confirm authentification [POST]
+### Confirm authentication [POST]
 
 + Request (application/json)
 
@@ -225,6 +229,49 @@ form of choices.
 
 # Data Structures
 
+## Request (object)
+
+### Properties
++ id: 123 (number, required)
++ origin_id: 45 (number, required)
+    identifier of loading's point nearest locality
++ destination_id: 78 (number, required)
+    identifier of destination's point nearest locality
++ categori_id: 13 (number, required)
+    identifier of truck
++ distance: 567.2 (number, required)
+    route length in kilometers
++ date_from: `2018.12.24 23:00:00` (string, required)
+    Pickup is avaluable from this date (with hour-accuracy)
++ date_to: `2018.12.24 23:00:00` (string, required)
+    Pickup is avaluable till this date (with hour-accuracy)
++ delivery_time: 343 (number, required)
+    estimated delivery time in hours
++ weigth: 1.1 (number, required)
+    cargo weight in tonns
++ volume: 5.2 (number, reqruired)
+    cargo volume in Cubic Meters
++ cargo_description: `Пластик в мешках` (string, required)
+    cargo description
++ cargo_special: `Верхняя,Боковая,Снятие стоек` (string)
+    cargo special conditions (usualy loading type)
++ price_vat: 13900 (number)
+    total price in RUB with VAT included
++ price: 11120 (number)
+    total price in RUB without VAT included
++ rate_vat: 24.50 (number)
+    price per kilometer in RUB with VAT
++ rate: 19.6 (number)
+    price per kilometer in RUB without VAT
++ office_id: 2 (number)
+    responsible office identifier
++ status: new, urgent, in_progress, closed, canceled, failed (enum)
+    Request status
++ created_date: `2018.12.24 23:10:10` (string)
+    Date and time of transportation request
++ updated_date: `2018.12.24 23:10:10` (string)
+    Date and time of last updated
+
 ## User (object)
 
 ### Properties
@@ -250,8 +297,10 @@ form of choices.
 
 ## Office (object)
 
+ and covers all requests out of local offices radius
+
 ### Properties
-+ id: 123 (number, required)
++ id: 2 (number, required)
 + phone: `+7 (095) 123-45-78` (string, required)
 + location_id: 123 (number, required)
 + geodata
@@ -259,9 +308,10 @@ form of choices.
     + lon (number, required)
     + radius (number, required)
 + is_default: false (boolean)
-    Default Office located in Moscow and covers all requests out of local offices radius
-+ created_at
-
-## Request (object)
+    Default Office located in Moscow — it's the one deault office.
++ created_at: `2018.12.24 23:10:10` (string, required)
+    Open Date and Time
++ updated_at: `2018.12.24 23:10:10` (string, required)
+    Last info update Date and Time
 
 ## Photo (object)
