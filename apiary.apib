@@ -6,6 +6,10 @@ HOST: http://polls.apiblueprint.org/
 
 API documentation for Android Application **«Чес(т)нок. Грузы»** *(draft name for the first stage)*
 
+## Helpful info
+* [Working API on production site](https://cesnok.ru/owner)
+* [Client's Info](https://www.dropbox.com/sh/vvrnzvyuri0t0lh/AABrm2m1Mfijp_eNGx0L1WiFa?dl=0)
+
 # Group User
 
 In general application doesn't allow any usage without authentification.
@@ -28,7 +32,7 @@ Sequence of actions depends on client flow and is covered by exhaustive variety 
 ## Profile [/user]
 
 Despite sending whole User object while updating the profile there is only two editable fields — **email** and **inn**.
-This fields can be updated only in case user has no previously stored values. 
+This fields can be updated only in case user has no previously stored values.
 
 **There is no possibility to changes once stored information.**
 
@@ -53,6 +57,12 @@ This fields can be updated only in case user has no previously stored values.
 
     + Attributes (User)
 
+    + Header
+
+            Authorization: {token}
+            Accept-Charset: utf-8
+
+
 + Response 200 (application/json)
 
     + Attributes (User)
@@ -62,36 +72,40 @@ This fields can be updated only in case user has no previously stored values.
 
 Application can authentificate user only by phone-number.
 It can be achieved with help of sms-codes.
-To avoid useless waste of money authorisation token with unlimited term of valiability
+To avoid useless waste of money authorisation token with unlimited term of valiability.
 
 + Request (application/json)
 
     + Attributes
-        — phone: `+7 (095) 123-45-67` (string)
+        + phone: `+7 (095) 123-45-67` (string)
             Valid russian mobile phone number
 
 + Response 200 (application/json)
 
     + Attributes
-        — auth_session: "098f6bcd4621d373cade4e832627b4f6" (string)
+        + auth_session: "098f6bcd4621d373cade4e832627b4f6" (string)
             32-symbol code of current authentification session
+        + is_registered: true (string)
+            due to both login and register functional server responding with registered flag
 
 ## SMS handling [/user/sms]
 
+Sms processing — application sends both phone and auth-session data to keep auth session.
 
 ### Confirm authentication [POST]
 
 + Request (application/json)
 
     + Attributes
-        — phone: `+7 (095) 123-45-67` (string)
+        + phone: `+7 (095) 123-45-67` (string)
             Valid russian mobile phone number
-        — auth_session: "098f6bcd4621d373cade4e832627b4f6" (string)
+        + auth_session: "098f6bcd4621d373cade4e832627b4f6" (string)
             32-symbol code of current authentification session
-        — code: 124232 (number)
+        + code: 124232 (number)
             6-digits verification code from sms-message
 
 + Response 200 (application/json)
+    
     + Attributes (User)
 
 ### Repeat code request [GET]
@@ -99,38 +113,50 @@ To avoid useless waste of money authorisation token with unlimited term of valia
 + Request (application/json)
 
     + Attributes
-        — phone: `+7 (095) 123-45-67` (string)
+        + phone: `+7 (095) 123-45-67` (string)
             Valid russian mobile phone number
-        — auth_session: "098f6bcd4621d373cade4e832627b4f6" (string)
+        + auth_session: "098f6bcd4621d373cade4e832627b4f6" (string)
             32-symbol code of current authentification session
 
 + Response 200 (application/json)
 
-    + Attribute
-        — auth_session: "098f6bcd4621d373cade4e832627b4f6" (string)
+    + Attributes
+        + auth_session: "098f6bcd4621d373cade4e832627b4f6" (string)
             32-symbol code of current authentification session
 
 ## Convert profile [/user/convert]
 
+Method to login with email and password from cesnok.ru account
+
+### Login with email and password [POST]
+
 + Request (application/json)
 
     + Attributes
-        — phone: `+7 (095) 123-45-67` (string)
-            Valid russian mobile phone number
-        — auth_session: "098f6bcd4621d373cade4e832627b4f6" (string)
-            32-symbol code of curren authentification session
+        + email: `test@cesnok.ru` (string)
+            Valid email address
+        + password: `qwerty` (string)
+            Valid password for the account on https://cesnok.ru
 
 + Response 200 (application/json)
 
-    + Attribute
-        — auth_session: "098f6bcd4621d373cade4e832627b4f6" (string)
+    + Attributes
+        + auth_session: "098f6bcd4621d373cade4e832627b4f6" (string)
             32-symbol code of curren authentification session
 
 # Group Data
 
+To provide offline mode possibility application downloads all requests and offices info from server within one method.
+Data-usage flow looks like this:
+* During **first-launch** application grabs all data from server and store it internaly with version of this data.
+* In case Android is connected to the Internet, each **1 minute** (*period is a subject of discussion*) application checks for new data and downloads the difference.
+* If Android stayed offline for more then period, when application finally appear online — it momentaly tries to grab the last differece of data comparing to the previous version.
+
+> **Important! Application needs only the difference — requests or offices which were added, removed or changed during the offline period**
+
 ## Data request path [/data]
 
-### Grap all data [GET]
+### Grab all data [GET]
 
 + Request (application/json)
 
@@ -141,91 +167,133 @@ To avoid useless waste of money authorisation token with unlimited term of valia
 
 + Response 200 (application/json)
 
-    + Attribute
-        — office_list (array[Office])
-        — request_list (array[Office])
-        — version: 1545984306 (number)
+    + Attributes
+        + office_list (array[Office])
+        + request_list (array[Office])
+        + version: 1545984306 (number)
             Version is a timestamp of last office and request provision
 
 
 ### Request data difference [POST]
 
-# Group Request
++ Request (application/json)
+    
+    + Attributes
+        + version: 1545984306 (number)
+            Last received data version (to calculate the difference)
 
+    + Header
 
-## Questions Collection [/questions]
-
-### List All Questions [GET]
+            Authorization: {token}
+            Accept-Charset: utf-8
 
 + Response 200 (application/json)
 
-        [
-            {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 2048
-                    }, {
-                        "choice": "Python",
-                        "votes": 1024
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 512
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 256
-                    }
-                ]
-            }
-        ]
+    + Attributes
+        + office_list (array[Office])
+        + request_list (array[Office])
+        + version: 1545984306 (number)
+            Version is a timestamp of last office and request provision
 
-### Create a New Question [POST]
 
-You may create your own question using this action. It takes a JSON
-object containing a question and a collection of answers in the
-form of choices.
+# Group Request
+
+Basically requests can be filtered, found and even read by Voice Assistant offline.
+Despite this fact there are 2 cases when application needs to communicate with server onbehalf Request.
+
+> **Important! Any request update can be possible if the App has an active internet connection.**
+> **Otherwise App handle it offline.**
+
+1. Check the actual Request status before allowing User to apply.
+2. Apply to the Request online.
+
+## Request path [/request/{id}]
+
++ Parameters
+    + id: 123 (number)
+        Request ID
+
+### Update request status and info [GET]
 
 + Request (application/json)
 
-        {
-            "question": "Favourite programming language?",
-            "choices": [
-                "Swift",
-                "Python",
-                "Objective-C",
-                "Ruby"
-            ]
-        }
+    + Header
 
-+ Response 201 (application/json)
+            Authorization: {token}
+            Accept-Charset: utf-8
 
-    + Headers
++ Response 200 (application/json)
 
-            Location: /questions/2
+    + Attributes (Request)
 
-    + Body
+### Apply to Request [POST]
 
-            {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 0
-                    }, {
-                        "choice": "Python",
-                        "votes": 0
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 0
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 0
-                    }
-                ]
-            }
++ Request (application/json)
+
+    + Header
+
+            Authorization: {token}
+            Accept-Charset: utf-8
+
++ Response 200 (application/json)
+
+    + Attributes
+        + request (Request)
+            Updated Request object
+        + message: "Ваша заявка получена. Скоро с вами свяжется оператор!" (string)
+            Success message
+
+# Group Photos
+
+To save time and be able to apply for requests faster App offers Photos feature.
+
+> **Important! User should input correct INN and upload 10 photos (1, insurance is optional).**
+
+After 1 business day or faster User will receive conformation.
+After it User can sign contracts much faster and feel save about getting the job and cargo.
+
+Process of approval is splitted into three steps:
+1. Uploading photos and saving INN-number.
+2. Getting first approval from Office that photos are made correctly and have enough quality.
+3. Get the approval from security department and insurance company.
+
+## Photos processing [/photo/{type}]
+
++ Parameters
+    + type: passport, passport_address, `driver_license_face`, `driver_license_back`, `truck_license_face`, `truck_license_back`, selfie, trailer_license, vin_code, insurance (enum)
+
+### Uploading photo [POST]
+
+
++ Request (multipart/form-data, boundary=AaB03x)
+    
+    + Attributes (Photo)
+
+
+    + Header
+
+            Authorization: {token}
+            Connection: keep-alive
+            Accept-Charset: utf-8
+
++ Response 200 (application/json)
+    
+    + Attributes (Photo)
+
+### Get photo status [GET]
+
++ Request (multipart/form-data, boundary=AaB03x)
+
+    + Header
+
+            Authorization: {token}
+            Connection: keep-alive
+            Accept-Charset: utf-8
+
++ Response 200 (application/json)
+    
+    + Attributes (Photo)
+
 
 # Data Structures
 
@@ -249,7 +317,7 @@ form of choices.
     estimated delivery time in hours
 + weigth: 1.1 (number, required)
     cargo weight in tonns
-+ volume: 5.2 (number, reqruired)
++ volume: 5.2 (number, required)
     cargo volume in Cubic Meters
 + cargo_description: `Пластик в мешках` (string, required)
     cargo description
@@ -297,8 +365,6 @@ form of choices.
 
 ## Office (object)
 
- and covers all requests out of local offices radius
-
 ### Properties
 + id: 2 (number, required)
 + phone: `+7 (095) 123-45-78` (string, required)
@@ -315,3 +381,24 @@ form of choices.
     Last info update Date and Time
 
 ## Photo (object)
+
+### Properties
++ id: 24 (number, required)
++ user_id: 123 (number, required)
+    User identifier
++ type: passport, passport_address, `driver_license_face`, `driver_license_back`, `truck_license_face`, `truck_license_back`, selfie, trailer_license, vin_code, insurance (enum)
++ filesize: 1567 (number)
+    Filesize in kilobytes (in case file is uploaded)
++ filetype: `image/gif` (string)
+    File Mime type (in case file is uploaded)
++ data (string) 
+    base64 encoded data (in case file is uploaded)
++ status: uploaded, approved, rejected, on_moderation, canceled (enum, required)
++ url (string)
+    URL to download image from static server (in case file was transfered to Server before)
++ created_at: `2018.12.24 23:10:10` (string, required)
+    First upload Date and Time
++ updated_at: `2018.12.24 23:10:10` (string, required)
+    Last upload Date and Time. Default value is equal to created_at property
++ moderated_at: `2018.12.24 23:10:10` (string)
+    Date and time of moderation confirmation from the Office
