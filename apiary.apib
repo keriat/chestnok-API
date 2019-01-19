@@ -1,7 +1,7 @@
 FORMAT: 1A
-HOST: http://polls.apiblueprint.org/
+HOST: http://chestnok.apiblueprint.org/
 
-# Chestnok Application API
+# Chestnok Website API
 > *Documentation written in english to stay in consistenct with common standarts*
 
 API documentation for Android Application **«Чес(т)нок. Грузы»** *(draft name for the first stage)*
@@ -11,7 +11,7 @@ API documentation for Android Application **«Чес(т)нок. Грузы»** *
 * [Client's Info](https://www.dropbox.com/sh/vvrnzvyuri0t0lh/AABrm2m1Mfijp_eNGx0L1WiFa?dl=0)
 
 ## Credentials
-Current API is located at list of URL's
+Current API is located on `chesnok.ru` website under following links:
 
 * https://cesnok.ru/api/internal/data — общий запрос на все данные
 * https://cesnok.ru/api/internal/request/14525 — запрос на конкретную заявку
@@ -236,15 +236,15 @@ Sms processing — application sends both phone and auth-session data to keep au
 + Request (application/json)
 
     + Attributes
-        + phone: `+7 (095) 123-45-67` (string)
+        + phone: `+7 (095) 123-45-67` (required, string)
             Valid russian mobile phone number
-        + auth_session: "098f6bcd4621d373cade4e832627b4f6" (string)
+        + auth_session: "098f6bcd4621d373cade4e832627b4f6" (required,string)
             32-symbol code of current authentification session
 
 + Response 200 (application/json)
 
     + Attributes
-        + auth_session: "098f6bcd4621d373cade4e832627b4f6" (string)
+        + auth_session: "098f6bcd4621d373cade4e832627b4f6" (required,string)
             32-symbol code of current authentification session
             
 ### Send code to validate request [POST]
@@ -252,26 +252,29 @@ Sms processing — application sends both phone and auth-session data to keep au
 + Request (application/json)
 
     + Attributes
-        + phone: `+7 (095) 123-45-67` (string)
+        + phone: `+7 (095) 123-45-67` (required,string)
             Valid russian mobile phone number
-        + auth_session: "098f6bcd4621d373cade4e832627b4f6" (string)
+        + auth_session: "098f6bcd4621d373cade4e832627b4f6" (required,string)
             32-symbol code of current authentification session
-        + code: 124232 (number)
+        + code: 124232 (required,number)
             6-digits verification code from sms-message
 
 + Response 200 (application/json)
     
     + Attributes (User)
 
-## Convert profile — Login with email and password [POST /user/convert]
+## Convert profile [/user/convert]
+
 Method to login with email and password from cesnok.ru account
+
+### Login with email and password [POST]
 
 + Request (application/json)
 
     + Attributes
-        + email: `test@cesnok.ru` (string)
+        + email: `test@cesnok.ru` (required,string)
             Valid email address
-        + password: `qwerty` (string)
+        + password: `qwerty` (required,string)
             Valid password for the account on https://cesnok.ru
 
 + Response 200 (application/json)
@@ -308,9 +311,9 @@ Request application data
 
     + Attributes
     
-        + office_list (array[Office])
-        + request_list (array[Request])
-        + version: 1545984306 (number)
+        + office_list (required, Office[])
+        + request_list (required, Request[])
+        + version: `1545984306` (required, number)
             Version is a timestamp of last office and request provision
 
 
