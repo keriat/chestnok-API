@@ -10,8 +10,15 @@ API documentation for Android Application **«Чес(т)нок. Грузы»** *
 * [Working API on production site](https://cesnok.ru/owner)
 * [Client's Info](https://www.dropbox.com/sh/vvrnzvyuri0t0lh/AABrm2m1Mfijp_eNGx0L1WiFa?dl=0)
 
-# Group User
+## Credentials
+Current API is located at list of URL's
 
+* https://cesnok.ru/api/internal/data — общий запрос на все данные
+* https://cesnok.ru/api/internal/request/14525 — запрос на конкретную заявку
+* https://cesnok.ru/api/internal/data — для патча от определенной временной отметки **(POST)**
+    * **Alias:** https://cesnok.ru/api/internal/patch?version=1547810398 **(GET)**
+
+# Group User
 In general application doesn't allow any usage without authentification.
 
 Sequence of actions depends on client flow and is covered by exhaustive variety of scenarios below:
@@ -313,16 +320,16 @@ Process of approval is splitted into three steps:
     Pickup is avaluable from this date (with hour-accuracy)
 + date_to: `2018.12.24 23:00:00` (string, required)
     Pickup is avaluable till this date (with hour-accuracy)
-+ delivery_time: 343 (number, required)
-    estimated delivery time in hours
-+ weigth: 1.1 (number, required)
++ delivery_time: `14 дней 2 часа` (string, required)
+    estimated delivery time in hours in human-readable format
++ weight: 1.1 (number, required)
     cargo weight in tonns
 + volume: 5.2 (number, required)
     cargo volume in Cubic Meters
 + cargo_description: `Пластик в мешках` (string, required)
     cargo description
 + cargo_special: `Верхняя,Боковая,Снятие стоек` (string)
-    cargo special conditions (usualy loading type)
+    cargo special conditions (usually loading type)
 + price_vat: 13900 (number)
     total price in RUB with VAT included
 + price: 11120 (number)
@@ -368,12 +375,15 @@ Process of approval is splitted into three steps:
 ### Properties
 + id: 2 (number, required)
 + phone: `+7 (095) 123-45-78` (string, required)
++ name: `Диспетчерская «Казань»` (string, required)
 + geodata
     + lat (number, required)
     + lon (number, required)
     + radius (number, required)
 + is_default: false (boolean)
     Default Office located in Moscow — it's the one deault office.
++ is_active: true (boolean)
+    State of office — is active or not
 + created_at: `2018.12.24 23:10:10` (string, required)
     Open Date and Time
 + updated_at: `2018.12.24 23:10:10` (string, required)
