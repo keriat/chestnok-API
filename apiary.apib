@@ -114,7 +114,6 @@ Group is used to:
 * Request password reset email
 
 ## Check credentials  [/user]
-
 Main purpose of this methods is to check if user with such credentials exists and retrieve his data from API.
 
 ### Get user by credentials [POST]
@@ -128,22 +127,17 @@ Main purpose of this methods is to check if user with such credentials exists an
             Valid password for the account on https://cesnok.ru
 
 + Response 200 (application/json)
+        + Attributes (User)
 
-    Return
-
-    + Attributes (User)
-    
 ## Remind password [/user/remind]
+Sends recovery email to user's email
 
 ### Request password recovery [POST]
-
-Sends recovery email to user's email.
 
 + Request (application/json)
 
     + Attributes
-        + email: `test@cesnok.ru` (required,string)
-            Valid email address
+        + email: `test@cesnok.ru` (required,string) — Valid email address
 
 + Response 200 (application/json)
 
